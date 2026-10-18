@@ -1,4 +1,4 @@
-# 🪰 FlyCraft
+# FlyCraft
 
 > *What if a fruit fly played Minecraft?*
 > *Not a fly-themed mod. An actual simulated fly brain, every one of its 166,700 neurons, holding the controls.*
@@ -11,17 +11,17 @@ Nobody trained it. Nobody tuned the weights. It's wired up the way a real fly is
 
 ---
 
-## 📍 Status
+## Status
 
-| | |
-|---|---|
-| 🧠 Brain side | ✅ Loads the full connectome and resolves every input/output neuron group |
-| ⛏️ Minecraft side | 🚧 Not wired up yet: the fly can think but has no body |
-| 🎮 Playable | ❌ Not yet. See the [roadmap](#-roadmap) |
+| Part | Status | |
+|---|---|---|
+| Brain side | **Done** | Loads the full connectome and resolves every input/output neuron group |
+| Minecraft side | **In progress** | Not wired up yet: the fly can think but has no body |
+| Playable | **Not yet** | See the [roadmap](#roadmap) |
 
 ---
 
-## 🧠 How it works
+## How it works
 
 ```
  Minecraft Java  ⇄  Mineflayer bot  ⇄  Controller loop  ⇄  FlyBrain (frozen connectome)
@@ -32,10 +32,10 @@ Every **20 ms brain step**, the controller runs one cycle:
 
 | Stage | What happens |
 |---|---|
-| 1. **Sense** 👀 | Read the game: health, nearby entities, position, yaw. Turn "zombie 4 blocks away, 30° to the left" into a list of `(neuron_indices, voltage)` pairs. |
-| 2. **Step** ⚡ | `fired = brain.step(inject=pairs)`: 166,700 point neurons integrate their input and some of them spike. |
-| 3. **Decode** 📈 | Smooth each motor group's spikes into a firing rate, then subtract a slow-moving baseline. |
-| 4. **Act** 🕹️ | Rate goes above threshold → hold W, turn the camera, or jump. |
+| 1. **Sense** | Read the game: health, nearby entities, position, yaw. Turn "zombie 4 blocks away, 30° to the left" into a list of `(neuron_indices, voltage)` pairs. |
+| 2. **Step** | `fired = brain.step(inject=pairs)`: 166,700 point neurons integrate their input and some of them spike. |
+| 3. **Decode** | Smooth each motor group's spikes into a firing rate, then subtract a slow-moving baseline. |
+| 4. **Act** | Rate goes above threshold → hold W, turn the camera, or jump. |
 
 ### The wiring
 
@@ -60,7 +60,7 @@ The giant fiber is what lets a real fly launch itself away from your fly swatter
 
 ---
 
-## 🚀 Quick start
+## Quick start
 
 ### Requirements
 - **Python 3.11+**
@@ -113,7 +113,7 @@ If a neuron name is wrong, `flycraft.brain` lists every group that matched zero 
 
 ---
 
-## ⚙️ Configuration
+## Configuration
 
 **Every** tunable lives in [`config.toml`](config.toml). No magic numbers are hidden in the code.
 
@@ -138,7 +138,7 @@ side = "L"
 
 ---
 
-## 🗺️ Roadmap
+## Roadmap
 
 ### Foundation
 - [x] **F01** Project scaffolding and a single config file
@@ -168,7 +168,7 @@ The full design is in [`spec.md`](spec.md).
 
 ---
 
-## ⚠️ Known limitations (a.k.a. why the fly is a bit dim)
+## Known limitations (a.k.a. why the fly is a bit dim)
 
 1. **Twitchy at rest.** With default settings, neurons sit near firing threshold, the network ticks at about 4 Hz, and motor neurons fire at roughly the same rate no matter what's going on. Calibration (F09) and baseline subtraction exist to get around this.
 2. **Blind eyes.** Photoreceptor signals die at the first relay, which is why we inject directly into feature detectors instead of feeding it pixels.
@@ -178,7 +178,7 @@ The full design is in [`spec.md`](spec.md).
 
 ---
 
-## 🙏 Credits
+## Credits
 
 - **Connectome data:** MaleCNS v1.0, licensed **CC BY 4.0**. Berg, S. *et al.* (2026), *Cell*. Thanks to everyone who mapped every synapse of a fly.
 - **Brain simulator:** [`flybrain`](https://pypi.org/project/flybrain/) (MIT). FlyCraft uses only the MIT-licensed `flybrain` package from [alextitonis/fly.ai](https://github.com/alextitonis/fly.ai), not anything else in that repository.

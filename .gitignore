@@ -1,0 +1,15 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+
+# Brain data (~260 MB; fetch with: python -m flybrain download --data fly-data)
+fly-data/
+
+# Run outputs
+calibration.csv
+*.log
+
+# OS / editor
+.DS_Store
+.vscode/

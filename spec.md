@@ -32,7 +32,7 @@ FlyCraft connects a simulated fruit fly brain (the MaleCNS v1.0 connectome, run 
 
 | ID | Requirement | Detail |
 |---|---|---|
-| SR-1 | Python | 3.10 or newer |
+| SR-1 | Python | 3.11 or newer (stdlib `tomllib`) |
 | SR-2 | Brain package | `flybrain` (MIT). `flybrain[gpu]` optional for NVIDIA GPU (CUDA 12). |
 | SR-3 | Brain data | About 260 MB, downloaded on first `FlyBrain()` call to `~/fly-data` (override with `FLY_DATA`). |
 | SR-4 | Bridge (Mode A) | `javascript` pip package (JSPyBridge) and Node.js 14+; Mineflayer is loaded with `require('mineflayer')`. |

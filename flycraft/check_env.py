@@ -7,7 +7,7 @@ import shutil
 import subprocess
 import sys
 
-MIN_PYTHON = (3, 10)
+MIN_PYTHON = (3, 11)  # tomllib
 MIN_NODE_MAJOR = 14
 
 

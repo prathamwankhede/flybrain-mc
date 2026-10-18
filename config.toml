@@ -1,0 +1,65 @@
+# FlyCraft configuration. Every tunable lives here (spec F01).
+# Paths are relative to this file.
+
+[minecraft]
+host = "localhost"
+port = 25565
+mc_version = "26.2"            # must match the server / LAN world version
+username = "FlyBot"
+max_entity_distance = 16.0     # blocks; entities farther than this are ignored
+
+[brain]
+device = "auto"                # "auto", "cpu" or "cuda"
+data_dir = "fly-data"          # folder holding brain.npz and weights.npz
+seed = 64
+dt = 0.020                     # seconds per brain step
+
+[run]
+calibrate = true               # true: log deviations to CSV, send no controls
+calibration_csv = "calibration.csv"
+
+[decoder]
+trace_decay = 0.9              # smoothing weight on the previous rate
+baseline_decay = 0.999         # very slow moving-average weight for the baseline
+
+[control]
+turn_gain = 1.0                # radians of yaw per unit of (dev_L - dev_R)
+turn_dead_zone = 0.01          # radians; smaller yaw changes are skipped
+thresh_fwd = 1.0               # DNg100 deviation (Hz) that holds forward
+thresh_jump = 1.0              # DNp01 deviation (Hz) that triggers jump
+thresh_back = 1.0              # MDN deviation (Hz) that holds back
+
+[stimulus]
+max_amount = 0.8               # cap for entity-proximity injections
+damage_amount = 0.9            # injection when the bot takes damage
+
+[stuck]
+seconds = 5.0                  # time without movement before the fallback fires
+min_distance = 0.5             # blocks; movement below this counts as stuck
+
+# Input groups: cell types injected by the sensory encoder.
+[inputs.looming_left]
+types = ["LC4", "LPLC2"]
+side = "L"
+
+[inputs.looming_right]
+types = ["LC4", "LPLC2"]
+side = "R"
+
+# Output groups: cell types read by the decoder.
+[outputs.forward]
+types = ["DNg100"]
+
+[outputs.steer_left]
+types = ["DNa02"]
+side = "L"
+
+[outputs.steer_right]
+types = ["DNa02"]
+side = "R"
+
+[outputs.jump]
+types = ["DNp01"]
+
+[outputs.backward]
+types = ["MDN"]

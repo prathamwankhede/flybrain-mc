@@ -26,6 +26,8 @@ class Config:
     data_dir: Path
     seed: int
     dt: float
+    sensory_input: bool
+    refractory: float
     calibrate: bool
     calibration_csv: Path
     trace_decay: float
@@ -64,6 +66,8 @@ def load(path: str | Path = DEFAULT_PATH) -> Config:
         data_dir=(base / brain["data_dir"]).resolve(),
         seed=int(brain["seed"]),
         dt=float(brain["dt"]),
+        sensory_input=bool(brain["sensory_input"]),
+        refractory=float(brain["refractory"]),
         calibrate=bool(run["calibrate"]),
         calibration_csv=(base / run["calibration_csv"]).resolve(),
         trace_decay=float(dec["trace_decay"]),

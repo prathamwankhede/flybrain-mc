@@ -13,6 +13,8 @@ device = "auto"                # "auto", "cpu" or "cuda"
 data_dir = "fly-data"          # folder holding brain.npz and weights.npz
 seed = 64
 dt = 0.020                     # seconds per brain step
+sensory_input = true           # false cuts synapses onto sensory neurons (see flybrain docs)
+refractory = 0.0               # seconds a neuron is held silent after a spike
 
 [run]
 calibrate = true               # true: log deviations to CSV, send no controls

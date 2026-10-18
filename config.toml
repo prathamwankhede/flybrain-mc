@@ -39,6 +39,14 @@ damage_amount = 0.9            # injection when the bot takes damage
 seconds = 5.0                  # time without movement before the fallback fires
 min_distance = 0.5             # blocks; movement below this counts as stuck
 
+[smoke_test]                   # brain-only check, no Minecraft (python -m flycraft.smoke_test)
+steps = 50                     # 1 s at dt = 0.020
+amount = 0.8                   # voltage injected into the stimulated group every step
+seeds = [1, 2, 3, 4, 5]        # noise seeds; every one must pass
+probe = ["DNp01"]              # cell types counted on each side (giant fiber)
+stimulus_left = "looming_left" # input groups stimulated in each trial
+stimulus_right = "looming_right"
+
 # Input groups: cell types injected by the sensory encoder.
 [inputs.looming_left]
 types = ["LC4", "LPLC2"]

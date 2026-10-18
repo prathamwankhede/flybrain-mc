@@ -15,7 +15,7 @@ Nobody trained it. Nobody tuned the weights. It's wired up the way a real fly is
 
 | Part | Status | |
 |---|---|---|
-| Brain side | **Done** | Loads the full connectome and resolves every input/output neuron group |
+| Brain side | **Done** | Loads the full connectome, resolves every neuron group, and passes the giant-fiber smoke test |
 | Minecraft side | **In progress** | Not wired up yet: the fly can think but has no body |
 | Playable | **Not yet** | See the [roadmap](#roadmap) |
 
@@ -111,6 +111,26 @@ python -m flycraft.brain
 
 If a neuron name is wrong, `flycraft.brain` lists every group that matched zero neurons and stops before anything touches Minecraft. You can look cell types up on [neuPrint](https://neuprint.janelia.org) (dataset `male-cns:v1.0`).
 
+### Watch the fly flinch (no Minecraft needed)
+
+```bash
+python -m flycraft.smoke_test
+```
+
+This pokes the left looming detectors for one simulated second, counts giant-fiber spikes on each side, then does the same on the right, for five noise seeds. If the wiring is right, the poked side's giant fiber does nearly all the firing:
+
+```
+seed | stim | L spikes | R spikes | result
+---------------------------------------------
+   1 |    L |       45 |        0 | PASS
+   1 |    R |        2 |       40 | PASS
+   ...
+10/10 trials passed (155 steps/s, 6.4 ms/step)
+SMOKE TEST PASSED
+```
+
+A real fly does the same thing: something looming on the left makes it jump away to the right.
+
 ---
 
 ## Configuration
@@ -126,6 +146,7 @@ If a neuron name is wrong, `flycraft.brain` lists every group that matched zero 
 | `[control]` | `turn_gain`, `turn_dead_zone`, `thresh_fwd`, `thresh_jump`, `thresh_back` |
 | `[stimulus]` | `max_amount`, `damage_amount` |
 | `[stuck]` | `seconds`, `min_distance` |
+| `[smoke_test]` | `steps`, `amount`, `seeds`, `probe`, `stimulus_left`, `stimulus_right` |
 | `[inputs.*]` / `[outputs.*]` | Neuron groups: `types = [...]` plus an optional `side = "L" \| "R"` |
 
 Want to see what happens if mobs poke the fly's tracking neurons instead? Add a group:
@@ -145,7 +166,7 @@ side = "L"
 - [x] **F02** Environment and dependency check
 ### Brain
 - [x] **F03** Brain loader and neuron-group resolver
-- [ ] **F04** Brain-only smoke test: poke the left looming detectors and confirm the left giant fiber fires more
+- [x] **F04** Brain-only smoke test: poke the left looming detectors and confirm the left giant fiber fires more
 ### Game
 - [ ] **F05** Minecraft connection via Mineflayer *(first job: confirm Mineflayer supports 26.2)*
 - [ ] **F06** Game-state sensing: nearest mob, its bearing, damage detection

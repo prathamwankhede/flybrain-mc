@@ -41,6 +41,11 @@ class Config:
     damage_amount: float
     stuck_seconds: float
     stuck_min_distance: float
+    smoke_steps: int
+    smoke_amount: float
+    smoke_seeds: tuple[int, ...]
+    smoke_probe: tuple[str, ...]
+    smoke_stimulus: dict[str, str]       # side ("L"/"R") -> input group name
     inputs: dict[str, Group]
     outputs: dict[str, Group]
 
@@ -55,6 +60,7 @@ def load(path: str | Path = DEFAULT_PATH) -> Config:
         raw = tomllib.load(f)
     mc, brain, run = raw["minecraft"], raw["brain"], raw["run"]
     dec, ctl, stim, stuck = raw["decoder"], raw["control"], raw["stimulus"], raw["stuck"]
+    smoke = raw["smoke_test"]
     base = path.parent
     return Config(
         host=mc["host"],
@@ -81,6 +87,11 @@ def load(path: str | Path = DEFAULT_PATH) -> Config:
         damage_amount=float(stim["damage_amount"]),
         stuck_seconds=float(stuck["seconds"]),
         stuck_min_distance=float(stuck["min_distance"]),
+        smoke_steps=int(smoke["steps"]),
+        smoke_amount=float(smoke["amount"]),
+        smoke_seeds=tuple(int(s) for s in smoke["seeds"]),
+        smoke_probe=tuple(smoke["probe"]),
+        smoke_stimulus={"L": smoke["stimulus_left"], "R": smoke["stimulus_right"]},
         inputs=_groups(raw["inputs"]),
         outputs=_groups(raw["outputs"]),
     )

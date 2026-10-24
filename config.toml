@@ -12,6 +12,14 @@ spawn_timeout = 60.0           # seconds to wait for the bot to spawn
 connect_test_seconds = 15.0    # how long `python -m flycraft.game` stays in the world
 max_entity_distance = 16.0     # blocks; entities farther than this are ignored
 
+[sensing]
+# Entity categories never treated as "nearby" (Mineflayer entity.type values).
+# Kept: player, hostile, animal, passive, water_creature, ambient, mob.
+ignore_entity_types = ["other", "projectile", "orb", "object", "global", "living"]
+flip_bearing = false           # true if in-game left/right turn out mirrored (spec R3)
+test_seconds = 120.0           # how long `python -m flycraft.sense` runs
+print_hz = 4.0                 # printed lines per second in the sense test
+
 [brain]
 device = "auto"                # "auto", "cpu" or "cuda"
 data_dir = "fly-data"          # folder holding brain.npz and weights.npz

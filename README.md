@@ -149,6 +149,16 @@ python -m flycraft.game
 
 If the bot gets kicked, the error says why and what to change (wrong version, online-mode server, nothing listening).
 
+### See what the fly senses
+
+```bash
+python -m flycraft.sense      # same LAN steps as above; Ctrl+C to stop
+# hp 20.0 | pos (2.5, -60.0, -2.5) yaw 180.0 | nearest Steve 2.3 m  bearing  +36.9 (LEFT)
+# hp 19.0 | pos (2.5, -60.0, -2.5) yaw 180.0 | nearest Steve 1.3 m  bearing  +36.9 (LEFT) | DAMAGE -1.0
+```
+
+Each 20 ms step the bot reads its health, position and facing, finds the nearest player or mob within `max_entity_distance`, and works out which way it is relative to where the bot is looking. Positive bearing means the thing is on the bot's left. A read costs about 2 ms. Run it in survival mode (`/gamemode survival FlyBot`), since creative bots can't take damage.
+
 ---
 
 ## Configuration
@@ -157,6 +167,7 @@ If the bot gets kicked, the error says why and what to change (wrong version, on
 
 | Section | Key settings |
 |---|---|
+| `[sensing]` | `ignore_entity_types`, `flip_bearing`, `test_seconds`, `print_hz` |
 | `[minecraft]` | `host`, `port` (`0` = auto-discover LAN), `mc_version`, `username`, `auth`, `lan_discovery_timeout`, `spawn_timeout`, `connect_test_seconds`, `max_entity_distance` |
 | `[brain]` | `device` (`auto`/`cpu`/`cuda`), `data_dir`, `seed`, `dt`, `sensory_input`, `refractory` |
 | `[run]` | `calibrate` (log only, send no controls), `calibration_csv` |
@@ -187,7 +198,7 @@ side = "L"
 - [x] **F04** Brain-only smoke test: poke the left looming detectors and confirm the left giant fiber fires more
 ### Game
 - [x] **F05** Minecraft connection via Mineflayer, with LAN world auto-discovery
-- [ ] **F06** Game-state sensing: nearest mob, its bearing, damage detection
+- [x] **F06** Game-state sensing: nearest mob, its bearing, damage detection
 ### Integration
 - [ ] **F07** Sensory encoder: game events → neuron injections
 - [ ] **F08** Output decoder: spikes → smoothed rate deviations

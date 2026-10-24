@@ -124,7 +124,7 @@ brain.dt                                        # step length in seconds
 - **Description:** Each step, read from Mineflayer: `bot.health`, `bot.entities`, `bot.entity.position`, `bot.entity.yaw`.
 - **Derived values:** nearest other entity within `max_entity_distance`; its distance; its bearing relative to bot yaw, computed as `wrap(atan2(-dx, -dz) - yaw)`; a damage flag when health decreases.
 - **Acceptance:** Printed values change correctly when a mob approaches from the left, right, and when the bot is hit.
-- **Open item:** Positive relative angle is assumed to mean left; verify in game and flip if mirrored.
+- **Resolved (2026-10-24):** Positive relative angle means left. Checked in game on 26.1.2 with a player walking around a stationary bot: LEFT/RIGHT matched, crossing 0 when passing in front, and each hit raised the damage flag. A read costs about 2 ms. `flip_bearing` in config covers a mirrored setup.
 
 ### F07. Sensory encoder
 - **Description:** Convert sensed state into injection pairs.
@@ -230,7 +230,7 @@ Recommended test world: Creative mode, flat, peaceful difficulty; raise difficul
 |---|---|---|
 | R1 | Neuron names or `side=` filters may not resolve | F03 check; look names up on neuPrint |
 | R2 | Thresholds are placeholders; bot may idle | F09 calibration data |
-| R3 | Left/right sign convention untested | F06 bearing test; flip if mirrored |
+| R3 | Left/right sign convention untested | **Closed:** verified in game (F06); `flip_bearing` exists if it ever differs |
 | R4 | LAN world may reject offline auth | Use local server with `online-mode=false` |
 | R5 | CPU too slow for real time | Use GPU build, or accept slower-than-real-time |
 | R6 | `fly.ai` repo is associated with a crypto token and compute-mining network | Use only the MIT-licensed `flybrain` package; do not touch token, wallet, or mining features; review package source before running |

@@ -116,10 +116,10 @@ class Connection:
         from javascript import require
 
         mineflayer = require("mineflayer", MINEFLAYER_VERSION)
-        helper = require("./bot.js")
+        self.helper = require("./bot.js")
         log.info("connecting to %s:%d as %s (mc %s, auth %s)", host, port, cfg.username, cfg.mc_version, cfg.auth)
-        self.bot = helper.create(mineflayer, {"host": host, "port": port, "username": cfg.username,
-                                              "auth": cfg.auth, "version": cfg.mc_version})
+        self.bot = self.helper.create(mineflayer, {"host": host, "port": port, "username": cfg.username,
+                                                   "auth": cfg.auth, "version": cfg.mc_version})
         self._status = self.bot.flycraft
         self.reason: str | None = None
 

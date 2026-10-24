@@ -26,6 +26,10 @@ class Config:
     spawn_timeout: float
     connect_test_seconds: float
     max_entity_distance: float
+    ignore_entity_types: tuple[str, ...]
+    flip_bearing: bool
+    sense_test_seconds: float
+    sense_print_hz: float
     device: str
     data_dir: Path
     seed: int
@@ -62,7 +66,7 @@ def load(path: str | Path = DEFAULT_PATH) -> Config:
     path = Path(path).resolve()
     with path.open("rb") as f:
         raw = tomllib.load(f)
-    mc, brain, run = raw["minecraft"], raw["brain"], raw["run"]
+    mc, sense, brain, run = raw["minecraft"], raw["sensing"], raw["brain"], raw["run"]
     dec, ctl, stim, stuck = raw["decoder"], raw["control"], raw["stimulus"], raw["stuck"]
     smoke = raw["smoke_test"]
     base = path.parent
@@ -76,6 +80,10 @@ def load(path: str | Path = DEFAULT_PATH) -> Config:
         spawn_timeout=float(mc["spawn_timeout"]),
         connect_test_seconds=float(mc["connect_test_seconds"]),
         max_entity_distance=float(mc["max_entity_distance"]),
+        ignore_entity_types=tuple(sense["ignore_entity_types"]),
+        flip_bearing=bool(sense["flip_bearing"]),
+        sense_test_seconds=float(sense["test_seconds"]),
+        sense_print_hz=float(sense["print_hz"]),
         device=brain["device"],
         data_dir=(base / brain["data_dir"]).resolve(),
         seed=int(brain["seed"]),

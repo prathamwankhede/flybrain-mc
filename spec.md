@@ -149,6 +149,7 @@ brain.dt                                        # step length in seconds
 - **Description:** Convert spikes into smoothed rates per output group.
 - **Method:** `inst = spikes_in_group / group_size / dt`; `rate = decay * rate + (1 - decay) * inst`; baseline updated as a very slow moving average (about 0.999 weight).
 - **Output:** Deviation from baseline per group.
+- **Warm-up:** For the first `warmup_steps` (250, 5 s) the baseline is a plain running mean of the rate so it settles quickly; the decoder reports `ready` once that is over, and controls should wait for it. After that the slow 0.999 average applies.
 
 | Neuron | Meaning | Intended control |
 |---|---|---|
@@ -158,6 +159,8 @@ brain.dt                                        # step length in seconds
 | `MDN` (optional) | backward walking | hold S |
 
 - **Acceptance:** With no input, deviations hover near zero; with the F04 stimulus, the `DNp01` deviation rises.
+- **Verified (2026-10-24):** `python -m flycraft.decoder`: over 30 s with no input the mean deviation is within 0.1 Hz of zero in every group; under the F04 stimulus the `DNp01` deviation averages +18.6 Hz (peak +23). One update costs 0.38 ms.
+- **Known limitations:** (1) Each output group is 1 to 4 neurons, so one noise spike in a single-neuron group reads as 50 Hz instantaneous and adds about 5 Hz to the smoothed rate with `trace_decay` 0.9; resting steering deviation has a standard deviation of 1.3 Hz (left) against a real response of about 4 Hz. (2) The baseline follows a held stimulus: after 1 s of looming the `DNp01` baseline rose from 0.01 to 0.94 Hz, so a long encounter lowers later deviations and leaves a negative dip afterwards. F09 calibration should show whether `trace_decay`, thresholds or a baseline freeze are needed.
 
 ### F09. Calibration mode with CSV logging
 - **Description:** When `calibrate = true`, print deviations per group and write them with timestamps to a CSV, without sending any controls.

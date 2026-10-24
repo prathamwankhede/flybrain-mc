@@ -40,6 +40,7 @@ class Config:
     calibration_csv: Path
     trace_decay: float
     baseline_decay: float
+    warmup_steps: int
     turn_gain: float
     turn_dead_zone: float
     thresh_fwd: float
@@ -97,6 +98,7 @@ def load(path: str | Path = DEFAULT_PATH) -> Config:
         calibration_csv=(base / run["calibration_csv"]).resolve(),
         trace_decay=float(dec["trace_decay"]),
         baseline_decay=float(dec["baseline_decay"]),
+        warmup_steps=int(dec["warmup_steps"]),
         turn_gain=float(ctl["turn_gain"]),
         turn_dead_zone=float(ctl["turn_dead_zone"]),
         thresh_fwd=float(ctl["thresh_fwd"]),

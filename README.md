@@ -148,6 +148,20 @@ python -m flycraft.encoder      # about 40 s
 
 It feeds fake game states through the encoder into the real brain and checks that a mob on the left makes the left steering neuron fire, a mob on the right the right one, walking and jumping rise with either, and nothing nearby injects nothing.
 
+### Check the decoder (no Minecraft needed)
+
+```bash
+python -m flycraft.decoder      # about 15 s
+# group        |    mean     std     p95
+# forward      |   +0.01    0.21   +0.02
+# steer_left   |   -0.08    1.31   +3.11
+# jump         |   +0.01    0.15   +0.00
+#
+# Left looming at 0.8 for 50 steps: mean jump deviation +18.6 Hz (peak +23.2)
+```
+
+The decoder turns each output group's spikes into a smoothed firing rate and subtracts a slow baseline, so a group that is merely busy at rest reads about zero. It spends the first 5 simulated seconds learning that baseline. The steering groups are single neurons, so expect some twitchy turning until the numbers are tuned in calibration.
+
 ### Give the fly a body
 
 1. In the Minecraft launcher, pick **26.1.2** and make a world. Creative, superflat and peaceful are best for testing.
@@ -188,7 +202,7 @@ Each 20 ms step the bot reads its health, position and facing, finds the nearest
 | `[minecraft]` | `host`, `port` (`0` = auto-discover LAN), `mc_version`, `username`, `auth`, `lan_discovery_timeout`, `spawn_timeout`, `connect_test_seconds`, `max_entity_distance` |
 | `[brain]` | `device` (`auto`/`cpu`/`cuda`), `data_dir`, `seed`, `dt`, `sensory_input`, `refractory` |
 | `[run]` | `calibrate` (log only, send no controls), `calibration_csv` |
-| `[decoder]` | `trace_decay` (rate smoothing), `baseline_decay` |
+| `[decoder]` | `trace_decay` (rate smoothing), `baseline_decay`, `warmup_steps` |
 | `[control]` | `turn_gain`, `turn_dead_zone`, `thresh_fwd`, `thresh_jump`, `thresh_back` |
 | `[stimulus]` | `max_amount`, `damage_amount`, `damage_hold_steps`, `track_amount`, `walk_amount` |
 | `[stuck]` | `seconds`, `min_distance` |
@@ -218,7 +232,7 @@ side = "L"
 - [x] **F06** Game-state sensing: nearest mob, its bearing, damage detection
 ### Integration
 - [x] **F07** Sensory encoder: game events → neuron injections
-- [ ] **F08** Output decoder: spikes → smoothed rate deviations
+- [x] **F08** Output decoder: spikes → smoothed rate deviations
 - [ ] **F09** Calibration mode with CSV logging (watch the fly think without letting it drive)
 - [ ] **F10** Control mapper: rates → W / jump / camera turns
 - [ ] **F11** Main loop with real-time pacing

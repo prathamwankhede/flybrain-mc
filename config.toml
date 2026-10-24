@@ -35,6 +35,7 @@ calibration_csv = "calibration.csv"
 [decoder]
 trace_decay = 0.9              # smoothing weight on the previous rate
 baseline_decay = 0.999         # very slow moving-average weight for the baseline
+warmup_steps = 250             # steps (5 s) the baseline is a plain running mean; no controls until done
 
 [control]
 turn_gain = 1.0                # radians of yaw per unit of (dev_L - dev_R)

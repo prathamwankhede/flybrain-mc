@@ -38,14 +38,15 @@ target_turn_deg_s = 90.0       # turn rate the suggested turn_gain aims for at a
 [decoder]
 trace_decay = 0.9              # smoothing weight on the previous rate
 baseline_decay = 0.999         # very slow moving-average weight for the baseline
-warmup_steps = 250             # steps (5 s) the baseline is a plain running mean; no controls until done
+warmup_steps = 1000            # silent brain steps (20 s) at startup that set the resting baseline
 
 [control]
-turn_gain = 1.0                # radians of yaw per unit of (dev_L - dev_R)
-turn_dead_zone = 0.01          # radians; smaller yaw changes are skipped
-thresh_fwd = 1.0               # DNg100 deviation (Hz) that holds forward
-thresh_jump = 1.0              # DNp01 deviation (Hz) that triggers jump
-thresh_back = 1.0              # MDN deviation (Hz) that holds back
+# Calibrated 2026-10-24 from a live 120 s session (injections replayed through the fixed decoder).
+turn_gain = 0.0077             # radians of yaw per step per Hz of (dev_L - dev_R); about 90 deg/s at a typical response
+turn_dead_zone = 0.027         # radians; smaller yaw changes are skipped
+thresh_fwd = 1.44              # DNg100 deviation (Hz) that holds forward (idle p99 0.14, driven p50 2.7)
+thresh_jump = 13.5             # DNp01 deviation (Hz) that triggers jump (idle p99 1.7, driven p50 25)
+thresh_back = 1.0              # MDN deviation (Hz) that holds back; placeholder: no current input drives MDN
 
 [stimulus]
 max_amount = 0.8               # cap for entity-proximity injections

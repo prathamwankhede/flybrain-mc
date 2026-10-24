@@ -160,7 +160,7 @@ python -m flycraft.decoder      # about 15 s
 # Left looming at 0.8 for 50 steps: mean jump deviation +18.6 Hz (peak +23.2)
 ```
 
-The decoder turns each output group's spikes into a smoothed firing rate and subtracts a slow baseline, so a group that is merely busy at rest reads about zero. It spends the first 5 simulated seconds learning that baseline, and afterwards only learns while nothing is stimulating the brain, so a long encounter can't drag the baseline up. The steering groups are single neurons, so expect some twitchy turning until the numbers are tuned in calibration.
+The decoder turns each output group's spikes into a smoothed firing rate and subtracts a slow baseline, so a group that is merely busy at rest reads about zero. It learns that baseline from 20 simulated seconds of a silent brain at startup, before the bot joins, so it doesn't matter who is standing nearby. Afterwards it only keeps learning while nothing is stimulating the brain, so a long encounter can't drag the baseline up. The steering groups are single neurons, so expect some twitchy turning until the numbers are tuned in calibration.
 
 ### Calibrate: watch the fly think without letting it drive
 
@@ -175,12 +175,13 @@ In calibration mode (`calibrate = true`, the default) the bot stands still and *
 t=  12.0s | zombie 8.5 m +90 deg | inj looming_left 0.47, track_left 0.60, walk 0.80 | dev mean(peak): forward +3.2(+6.0)  steer_left +2.6(+6.0)  steer_right +0.0(+0.0)  jump +10.2(+11.6)  ...
 ```
 
-A good live session, about two minutes: stand still near the bot for 20 s (so it learns what quiet looks like), walk a circle around it so the nearest entity passes its left and its right, hit it a few times (survival mode: `/gamemode survival FlyBot`), then step away for 30 s. When the run ends it prints a table of every group's deviation while **idle** against while **driven**, then suggestions:
+A good live session, about two minutes: the bot first spends a few seconds learning what a silent brain looks like, then joins. Walk a circle around it so the nearest entity passes its left and its right, hit it a few times (survival mode: `/gamemode survival FlyBot`), and spend at least 30 s well away from it (beyond `max_entity_distance`), so there are plenty of idle steps to compare against. When the run ends it prints a table of every group's deviation while **idle** against while **driven**, then suggestions:
 
 ```
-  thresh_jump = 11.36   (now 1; idle p99 1.36, driven p50 21.36)
-  thresh_fwd = 2.31     (now 1; ...)   WEAK: a single noise spike can cross it
-  turn_gain = 0.0067    (now 1; aims for 90 deg/s ...)
+  thresh_jump = 13.48   (now 1; idle p99 1.69, driven p50 25.28)
+  thresh_fwd = 1.44     (now 1; idle p99 0.14, driven p50 2.74)
+  thresh_back: not separable (driven p50 0.13 Hz is not above idle p99 1.25 Hz); ...
+  turn_gain = 0.0077    (now 1; aims for 90 deg/s ...)
 ```
 
 Suggestions are printed, never written for you: copy the ones you agree with into `[control]` in `config.toml`. A group marked WEAK or "not separable" means the brain barely tells signal from noise there. `python -m flycraft --report calibration.csv` reprints the summary for an old run. Earlier CSVs are kept under dated names.

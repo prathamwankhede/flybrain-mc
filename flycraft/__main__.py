@@ -52,14 +52,17 @@ def main(argv: list[str] | None = None) -> int:
 
     seconds = args.seconds if args.seconds is not None else (
         scripted.DURATION if args.scripted else cfg.calibration_seconds)
+    loop = Loop(brain, inputs, outputs, None, cfg)
+    log.info("learning the resting baseline: %d silent steps (%.0f s of brain time)...", cfg.warmup_steps,
+             cfg.warmup_steps * cfg.dt)
+    loop.warm_up()
     conn = None
     try:
         if args.scripted:
-            source, alive = scripted.ScriptedGame(cfg), (lambda: True)
+            loop.source, alive = scripted.ScriptedGame(cfg), (lambda: True)
         else:
             conn = game.connect(cfg)
-            source, alive = Sensor(conn, cfg), conn.poll
-        loop = Loop(brain, inputs, outputs, source, cfg)
+            loop.source, alive = Sensor(conn, cfg), conn.poll
         log.info("calibrating for %s; no controls are sent (Ctrl+C to stop early)",
                  f"{seconds:g} s" if seconds > 0 else "as long as you like")
         stats = calibrate.run(loop, cfg, inputs, outputs, seconds, alive, paced=not args.scripted)

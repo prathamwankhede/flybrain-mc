@@ -149,7 +149,7 @@ brain.dt                                        # step length in seconds
 - **Description:** Convert spikes into smoothed rates per output group.
 - **Method:** `inst = spikes_in_group / group_size / dt`; `rate = decay * rate + (1 - decay) * inst`; baseline updated as a very slow moving average (about 0.999 weight).
 - **Output:** Deviation from baseline per group.
-- **Warm-up:** For the first `warmup_steps` (250, 5 s) the baseline is a plain running mean of the rate so it settles quickly; the decoder reports `ready` once that is over, and controls should wait for it. After that the slow 0.999 average applies.
+- **Warm-up:** Before the game starts, the loop runs `warmup_steps` (1000, 20 s of brain time) silent brain steps and the baseline is the plain running mean of the rate over them; `ready` is true afterwards. The resting rate belongs to the brain, not the game: learning it in game let a nearby mob into the baseline (live run: jump baseline 27 Hz, idle deviation -27 Hz relaxing over a minute). After warm-up the slow 0.999 average applies, only while no input is driving the network.
 
 | Neuron | Meaning | Intended control |
 |---|---|---|
@@ -169,6 +169,7 @@ brain.dt                                        # step length in seconds
 - **Implementation:** `python -m flycraft` (while `calibrate = true`) joins the world, runs sense -> encode -> brain step -> decode each `dt`, and sends no controls (no control-state call exists anywhere in that path). `calibration_csv` has one row per step: `t_s`, `wall`, `step`, `ready`, `health`, `entity`, `distance`, `bearing_deg`, `damaged`, `inj_<input group>` for every input group, `dev_<output group>` for every output group, and `dev_steer` (left minus right). An existing file is renamed to a dated name, never overwritten.
 - **Summary:** on exit (or `--report FILE.csv`) it compares each group's deviation while idle against while driven and prints suggested `thresh_*`, `turn_gain` and `turn_dead_zone`; it flags a threshold as WEAK when a single noise spike can cross it and as not separable when the inputs don't drive that group. Suggestions are printed only.
 - **Offline test:** `python -m flycraft --scripted` replays a scripted zombie (approach from the left, cross in front, stand on the right, hit, leave) through the real brain, encoder, decoder, CSV and summary with no Minecraft.
+- **Live (2026-10-24, 26.1.2 LAN, 120 s):** the bot stayed still and 6000 rows were logged, but the first run's baseline was poisoned by a mob within 3 m during the in-game warm-up (fixed, see F08 Warm-up). Replaying the recorded injections through the fixed pipeline gave: idle `jump` p99 1.7 Hz vs driven p50 25 Hz, idle `forward` p99 0.14 Hz vs driven p50 2.7 Hz, `MDN` (`backward`) not separable. Calibrated values are in `config.toml`; 34 of 6000 steps ran late under heavy machine load.
 - **Verified offline (2026-10-24):** 2000 rows for 40 s; all 5 `inj_*` and 6 `dev_*` columns present; `inj_*` all 0 with no mob; `dev_steer` +3.5 Hz on the left approach and -2.7 Hz with the mob on the right; idle deviations near 0 after the mob leaves; 5.8 ms per tick. Findings: `forward` is only weakly separable (idle p99 2.1 Hz vs driven p50 2.6 Hz), and `backward` (`MDN`) is not driven by any current input.
 
 ### F10. Control mapper

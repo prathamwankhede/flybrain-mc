@@ -45,7 +45,7 @@ class Decoder:
         self._dt = cfg.dt
         self._decay = cfg.trace_decay
         self._baseline_decay = cfg.baseline_decay
-        self._warmup = cfg.warmup_steps
+        self._warmup = cfg.warmup_steps      # steps of silence that set the resting baseline
         self._rate = np.zeros(len(self._names))
         self._baseline = np.zeros(len(self._names))
         self.steps = 0

@@ -41,7 +41,7 @@ class StepRecord:
 
 class Loop:
     def __init__(self, brain: FlyBrain, inputs: dict[str, ResolvedGroup], outputs: dict[str, ResolvedGroup],
-                 source: GameSource, cfg: Config):
+                 source: GameSource | None, cfg: Config):
         self.brain = brain
         self.source = source
         self.encoder = Encoder(inputs, cfg)
@@ -50,11 +50,21 @@ class Loop:
         self.step = 0
         self.overruns = 0
         self._next: float | None = None
+        self._warmup = cfg.warmup_steps
         self._settle = settle_steps(cfg)
         self._since_injection = self._settle + 1
         brain.reset(cfg.seed)
 
+    def warm_up(self) -> None:
+        """Run the brain with no input so the decoder learns its resting baseline.
+
+        The resting rate belongs to the brain, not the game: learning it while a mob happens to
+        be nearby would bake the mob's effect into the baseline. Call before the first tick."""
+        for _ in range(self._warmup):
+            self.decoder.update(self.brain.step())
+
     def tick(self) -> StepRecord:
+        assert self.source is not None, "set loop.source before ticking"
         state = self.source.read()
         injections = self.encoder.encode(state)
         fired = self.brain.step(inject=pairs(injections))

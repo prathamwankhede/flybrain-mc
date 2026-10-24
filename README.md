@@ -43,9 +43,12 @@ Every **20 ms brain step**, the controller runs one cycle:
 
 | Game event | Neurons stimulated | Real-fly job |
 |---|---|---|
-| Mob approaching on the left / right | `LC4`, `LPLC2` (that side) | Looming detection: "something is about to hit me" |
+| Mob in range, on the left / right | `LC4`, `LPLC2` (that side), stronger when closer | Looming detection: "something is about to hit me", so the fly jumps |
+| Mob in range | `LC10a` (that side) | Visual tracking: steers toward the mob |
+| Mob in range | `LPC1` | Walking: heads for the mob |
 | Took damage | `LC4`, `LPLC2` (both sides) | Same alarm, but louder |
-| *(planned)* Moving target in view | `LC10a` | Visual tracking |
+
+The fly only walks, turns and jumps when something is in range, so it stands still when alone. `LC4`/`LPLC2` alone could only ever make it jump: in this model they drive nothing else, so walking and steering needed `LPC1` and `LC10a`.
 
 **Out** (fly → game). Descending neurons carry commands from the brain to the body:
 
@@ -131,6 +134,20 @@ SMOKE TEST PASSED
 
 A real fly does the same thing: something looming on the left makes it jump away to the right.
 
+### See what the encoder makes the brain do (no Minecraft needed)
+
+```bash
+python -m flycraft.encoder      # about 40 s
+# case             | forward   steer_left  steer_right   jump  backward   (output rate, Hz)
+# nothing nearby   |    0.00        1.30         0.50    0.00      0.28
+#                    -> (no injections)
+# mob left 4 m     |    2.70        5.10         0.70   21.55      0.60
+#                    -> looming_left 0.75, track_left 0.60, walk 0.80
+# mob right 4 m    |    2.70        1.00         3.70   14.80      0.47
+```
+
+It feeds fake game states through the encoder into the real brain and checks that a mob on the left makes the left steering neuron fire, a mob on the right the right one, walking and jumping rise with either, and nothing nearby injects nothing.
+
 ### Give the fly a body
 
 1. In the Minecraft launcher, pick **26.1.2** and make a world. Creative, superflat and peaceful are best for testing.
@@ -173,7 +190,7 @@ Each 20 ms step the bot reads its health, position and facing, finds the nearest
 | `[run]` | `calibrate` (log only, send no controls), `calibration_csv` |
 | `[decoder]` | `trace_decay` (rate smoothing), `baseline_decay` |
 | `[control]` | `turn_gain`, `turn_dead_zone`, `thresh_fwd`, `thresh_jump`, `thresh_back` |
-| `[stimulus]` | `max_amount`, `damage_amount` |
+| `[stimulus]` | `max_amount`, `damage_amount`, `damage_hold_steps`, `track_amount`, `walk_amount` |
 | `[stuck]` | `seconds`, `min_distance` |
 | `[smoke_test]` | `steps`, `amount`, `seeds`, `probe`, `stimulus_left`, `stimulus_right` |
 | `[inputs.*]` / `[outputs.*]` | Neuron groups: `types = [...]` plus an optional `side = "L" \| "R"` |
@@ -200,7 +217,7 @@ side = "L"
 - [x] **F05** Minecraft connection via Mineflayer, with LAN world auto-discovery
 - [x] **F06** Game-state sensing: nearest mob, its bearing, damage detection
 ### Integration
-- [ ] **F07** Sensory encoder: game events → neuron injections
+- [x] **F07** Sensory encoder: game events → neuron injections
 - [ ] **F08** Output decoder: spikes → smoothed rate deviations
 - [ ] **F09** Calibration mode with CSV logging (watch the fly think without letting it drive)
 - [ ] **F10** Control mapper: rates → W / jump / camera turns

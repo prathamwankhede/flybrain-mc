@@ -47,6 +47,9 @@ class Config:
     thresh_back: float
     max_amount: float
     damage_amount: float
+    damage_hold_steps: int
+    track_amount: float
+    walk_amount: float
     stuck_seconds: float
     stuck_min_distance: float
     smoke_steps: int
@@ -101,6 +104,9 @@ def load(path: str | Path = DEFAULT_PATH) -> Config:
         thresh_back=float(ctl["thresh_back"]),
         max_amount=float(stim["max_amount"]),
         damage_amount=float(stim["damage_amount"]),
+        damage_hold_steps=int(stim["damage_hold_steps"]),
+        track_amount=float(stim["track_amount"]),
+        walk_amount=float(stim["walk_amount"]),
         stuck_seconds=float(stuck["seconds"]),
         stuck_min_distance=float(stuck["min_distance"]),
         smoke_steps=int(smoke["steps"]),

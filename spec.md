@@ -133,12 +133,17 @@ brain.dt                                        # step length in seconds
 |---|---|---|
 | Entity nearby, on left | `LC4`, `LPLC2` (side L) | scaled by closeness, capped at 0.8 |
 | Entity nearby, on right | `LC4`, `LPLC2` (side R) | scaled by closeness, capped at 0.8 |
-| Damage taken | `LC4`, `LPLC2` both sides | 0.9 |
-| (optional) Moving target in view | `LC10a` | configurable |
+| Entity nearby, on either side | `LC10a` (that side) | `track_amount` x side weight; drives same-side `DNa02`, so the bot turns toward it |
+| Entity nearby | `LPC1` (both sides) | `walk_amount`; the only input found that drives `DNg100` (forward) |
+| Damage taken | `LC4`, `LPLC2` both sides | 0.9, held `damage_hold_steps` steps (a 1-step pulse gave 4x less jump response) |
 | (optional) Small approaching object | `LPLC1` | configurable |
 
+- **Closeness:** `1 - distance / max_entity_distance`, clipped to [0, 1].
+- **Side weights:** smooth in the bearing so steering does not flip when the entity crosses straight ahead. Ahead or behind, both sides get full weight; fully to one side, the other gets none.
+- **Why LC10a and LPC1 (measured 2026-10-24, dt 0.02, 5 s):** `LC4`/`LPLC2` drive only `DNp01` (about 22 Hz); `DNg100` stays at 0 Hz and `DNa02` barely moves. `LPC1` at 0.8 gives `DNg100` about 3 Hz; `LC10a` at 0.6 gives same-side `DNa02` about 4 Hz.
 - **Constraint:** Do not route raw screen pixels through the simulated photoreceptors (see Section 7).
 - **Acceptance:** Injection list is empty when nothing is nearby and non-empty when a mob is within range.
+- **Verified:** `python -m flycraft.encoder` drives the real brain with fake states: mob left raises left steering and mob right raises right; walking and jumping rise in both; a mob ahead balances steering; a far mob drives jump less than a near one; damage produces a jump burst.
 
 ### F08. Output decoder
 - **Description:** Convert spikes into smoothed rates per output group.

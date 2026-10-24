@@ -46,6 +46,9 @@ thresh_back = 1.0              # MDN deviation (Hz) that holds back
 [stimulus]
 max_amount = 0.8               # cap for entity-proximity injections
 damage_amount = 0.9            # injection when the bot takes damage
+damage_hold_steps = 5          # steps the damage injection is held after a hit
+track_amount = 0.6             # LC10a injection on the entity's side (steering flattens past ~0.6)
+walk_amount = 0.8              # LPC1 injection while an entity is in range (forward ~3 Hz)
 
 [stuck]
 seconds = 5.0                  # time without movement before the fallback fires
@@ -67,6 +70,19 @@ side = "L"
 [inputs.looming_right]
 types = ["LC4", "LPLC2"]
 side = "R"
+
+# Tracking: LC10a drives same-side DNa02, so the bot turns toward the entity.
+[inputs.track_left]
+types = ["LC10a"]
+side = "L"
+
+[inputs.track_right]
+types = ["LC10a"]
+side = "R"
+
+# Walking: LPC1 is the only input found that drives DNg100 (forward).
+[inputs.walk]
+types = ["LPC1"]
 
 # Output groups: cell types read by the decoder.
 [outputs.forward]

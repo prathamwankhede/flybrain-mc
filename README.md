@@ -16,7 +16,7 @@ Nobody trained it. Nobody tuned the weights. It's wired up the way a real fly is
 | Part | Status | |
 |---|---|---|
 | Brain side | **Done** | Loads the full connectome, resolves every neuron group, and passes the giant-fiber smoke test |
-| Minecraft side | **In progress** | Not wired up yet: the fly can think but has no body |
+| Minecraft side | **In progress** | The bot joins your world and spawns, but the brain isn't driving it yet |
 | Playable | **Not yet** | See the [roadmap](#roadmap) |
 
 ---
@@ -65,7 +65,7 @@ The giant fiber is what lets a real fly launch itself away from your fly swatter
 ### Requirements
 - **Python 3.11+**
 - **Node.js 14+** (runs Mineflayer through [JSPyBridge](https://github.com/extremeheat/JSPyBridge))
-- **Minecraft Java Edition 26.2**: a local server with `online-mode=false`, or a single-player world opened to LAN
+- **Minecraft Java Edition 26.1.2**: a single-player world opened to LAN, or a local server with `online-mode=false`. Mineflayer's latest release (4.39) supports up to 26.1.x; 26.2 support is still in open upstream PRs.
 - About **260 MB** of disk for the brain data
 - *Optional:* an NVIDIA GPU (CUDA 12) with `pip install "flybrain[gpu]"`. A step takes about 12–15 ms on a 24-thread CPU and about 1.4 ms on an RTX 4060.
 
@@ -131,6 +131,24 @@ SMOKE TEST PASSED
 
 A real fly does the same thing: something looming on the left makes it jump away to the right.
 
+### Give the fly a body
+
+1. In the Minecraft launcher, pick **26.1.2** and make a world. Creative, superflat and peaceful are best for testing.
+2. Press Esc, choose **Open to LAN**, then **Start LAN World**.
+3. Run:
+
+```bash
+python -m flycraft.game
+# INFO flycraft.game: listening for a LAN world for up to 15 s...
+# INFO flycraft.game: found LAN world '...' at 10.0.0.19:54321
+# INFO flycraft.game: connecting to 10.0.0.19:54321 as FlyBot (mc 26.1.2, auth offline)
+# INFO flycraft.game: spawned as FlyBot at (x, y, z), game mode ..., version ...
+```
+
+`FlyBot` joins your world, stands there for 15 seconds looking confused, and leaves. The bot finds the world on its own by listening for the same LAN announcement that fills your multiplayer screen. If that doesn't work on your network, pass the port shown in chat ("Local game hosted on port NNNNN"): `python -m flycraft.game --port NNNNN`.
+
+If the bot gets kicked, the error says why and what to change (wrong version, online-mode server, nothing listening).
+
 ---
 
 ## Configuration
@@ -139,7 +157,7 @@ A real fly does the same thing: something looming on the left makes it jump away
 
 | Section | Key settings |
 |---|---|
-| `[minecraft]` | `host`, `port`, `mc_version`, `username`, `max_entity_distance` |
+| `[minecraft]` | `host`, `port` (`0` = auto-discover LAN), `mc_version`, `username`, `auth`, `lan_discovery_timeout`, `spawn_timeout`, `connect_test_seconds`, `max_entity_distance` |
 | `[brain]` | `device` (`auto`/`cpu`/`cuda`), `data_dir`, `seed`, `dt`, `sensory_input`, `refractory` |
 | `[run]` | `calibrate` (log only, send no controls), `calibration_csv` |
 | `[decoder]` | `trace_decay` (rate smoothing), `baseline_decay` |
@@ -168,7 +186,7 @@ side = "L"
 - [x] **F03** Brain loader and neuron-group resolver
 - [x] **F04** Brain-only smoke test: poke the left looming detectors and confirm the left giant fiber fires more
 ### Game
-- [ ] **F05** Minecraft connection via Mineflayer *(first job: confirm Mineflayer supports 26.2)*
+- [x] **F05** Minecraft connection via Mineflayer, with LAN world auto-discovery
 - [ ] **F06** Game-state sensing: nearest mob, its bearing, damage detection
 ### Integration
 - [ ] **F07** Sensory encoder: game events → neuron injections

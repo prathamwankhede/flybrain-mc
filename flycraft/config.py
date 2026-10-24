@@ -21,6 +21,10 @@ class Config:
     port: int
     mc_version: str
     username: str
+    auth: str
+    lan_discovery_timeout: float
+    spawn_timeout: float
+    connect_test_seconds: float
     max_entity_distance: float
     device: str
     data_dir: Path
@@ -67,6 +71,10 @@ def load(path: str | Path = DEFAULT_PATH) -> Config:
         port=int(mc["port"]),
         mc_version=mc["mc_version"],
         username=mc["username"],
+        auth=mc["auth"],
+        lan_discovery_timeout=float(mc["lan_discovery_timeout"]),
+        spawn_timeout=float(mc["spawn_timeout"]),
+        connect_test_seconds=float(mc["connect_test_seconds"]),
         max_entity_distance=float(mc["max_entity_distance"]),
         device=brain["device"],
         data_dir=(base / brain["data_dir"]).resolve(),

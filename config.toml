@@ -2,10 +2,14 @@
 # Paths are relative to this file.
 
 [minecraft]
-host = "localhost"
-port = 25565
-mc_version = "26.2"            # must match the server / LAN world version
+host = "localhost"             # ignored when port = 0 (taken from the LAN announcement)
+port = 0                       # 0 = auto-discover an open LAN world; else a fixed server port
+mc_version = "26.1.2"          # must match the world; Mineflayer 4.39 supports up to 26.1.x
 username = "FlyBot"
+auth = "offline"               # "offline" (online-mode=false servers) or "microsoft"
+lan_discovery_timeout = 15.0   # seconds to listen for a LAN world announcement
+spawn_timeout = 60.0           # seconds to wait for the bot to spawn
+connect_test_seconds = 15.0    # how long `python -m flycraft.game` stays in the world
 max_entity_distance = 16.0     # blocks; entities farther than this are ignored
 
 [brain]

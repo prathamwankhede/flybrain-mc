@@ -118,7 +118,7 @@ brain.dt                                        # step length in seconds
 - **Description:** Create a bot via `mineflayer.createBot({host, port, username, auth: "offline", version})` and wait for the `spawn` event.
 - **Behaviour:** Handle `kicked` and `error` events by logging and exiting cleanly.
 - **Acceptance:** Bot appears in a local world and the program reports it has spawned.
-- **Open item:** Joining a LAN world with `auth: "offline"` is unverified; fall back to a local server with `online-mode=false`.
+- **Resolved (2026-10-24):** Joining a LAN world with `auth: "offline"` works (tested on 26.1.2). Mineflayer 4.39 supports up to 26.1.x, so the project targets 26.1.2.
 
 ### F06. Game-state sensing
 - **Description:** Each step, read from Mineflayer: `bot.health`, `bot.entities`, `bot.entity.position`, `bot.entity.yaw`.

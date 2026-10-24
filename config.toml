@@ -30,7 +30,10 @@ refractory = 0.0               # seconds a neuron is held silent after a spike
 
 [run]
 calibrate = true               # true: log deviations to CSV, send no controls
-calibration_csv = "calibration.csv"
+calibration_csv = "calibration.csv"   # an existing file is kept under a dated name, never overwritten
+calibration_seconds = 120.0    # length of a calibration run; 0 = until Ctrl+C
+print_interval_s = 1.0         # seconds between console summary lines
+target_turn_deg_s = 90.0       # turn rate the suggested turn_gain aims for at a typical steering response
 
 [decoder]
 trace_decay = 0.9              # smoothing weight on the previous rate

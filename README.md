@@ -160,7 +160,30 @@ python -m flycraft.decoder      # about 15 s
 # Left looming at 0.8 for 50 steps: mean jump deviation +18.6 Hz (peak +23.2)
 ```
 
-The decoder turns each output group's spikes into a smoothed firing rate and subtracts a slow baseline, so a group that is merely busy at rest reads about zero. It spends the first 5 simulated seconds learning that baseline. The steering groups are single neurons, so expect some twitchy turning until the numbers are tuned in calibration.
+The decoder turns each output group's spikes into a smoothed firing rate and subtracts a slow baseline, so a group that is merely busy at rest reads about zero. It spends the first 5 simulated seconds learning that baseline, and afterwards only learns while nothing is stimulating the brain, so a long encounter can't drag the baseline up. The steering groups are single neurons, so expect some twitchy turning until the numbers are tuned in calibration.
+
+### Calibrate: watch the fly think without letting it drive
+
+```bash
+python -m flycraft --scripted     # no Minecraft: replays a fake zombie through the real brain (40 s)
+python -m flycraft                # live: join your LAN world, run for calibration_seconds (Ctrl+C to stop early)
+```
+
+In calibration mode (`calibrate = true`, the default) the bot stands still and **no controls are ever sent**. Every 20 ms it senses the world, injects into the brain, and logs one CSV row (`calibration.csv`): the nearest entity, the injection into each input group (`inj_*`), and the deviation of each output group (`dev_*`, plus `dev_steer` = left minus right). Once a second it prints a line like:
+
+```
+t=  12.0s | zombie 8.5 m +90 deg | inj looming_left 0.47, track_left 0.60, walk 0.80 | dev mean(peak): forward +3.2(+6.0)  steer_left +2.6(+6.0)  steer_right +0.0(+0.0)  jump +10.2(+11.6)  ...
+```
+
+A good live session, about two minutes: stand still near the bot for 20 s (so it learns what quiet looks like), walk a circle around it so the nearest entity passes its left and its right, hit it a few times (survival mode: `/gamemode survival FlyBot`), then step away for 30 s. When the run ends it prints a table of every group's deviation while **idle** against while **driven**, then suggestions:
+
+```
+  thresh_jump = 11.36   (now 1; idle p99 1.36, driven p50 21.36)
+  thresh_fwd = 2.31     (now 1; ...)   WEAK: a single noise spike can cross it
+  turn_gain = 0.0067    (now 1; aims for 90 deg/s ...)
+```
+
+Suggestions are printed, never written for you: copy the ones you agree with into `[control]` in `config.toml`. A group marked WEAK or "not separable" means the brain barely tells signal from noise there. `python -m flycraft --report calibration.csv` reprints the summary for an old run. Earlier CSVs are kept under dated names.
 
 ### Give the fly a body
 
@@ -201,7 +224,7 @@ Each 20 ms step the bot reads its health, position and facing, finds the nearest
 | `[sensing]` | `ignore_entity_types`, `flip_bearing`, `test_seconds`, `print_hz` |
 | `[minecraft]` | `host`, `port` (`0` = auto-discover LAN), `mc_version`, `username`, `auth`, `lan_discovery_timeout`, `spawn_timeout`, `connect_test_seconds`, `max_entity_distance` |
 | `[brain]` | `device` (`auto`/`cpu`/`cuda`), `data_dir`, `seed`, `dt`, `sensory_input`, `refractory` |
-| `[run]` | `calibrate` (log only, send no controls), `calibration_csv` |
+| `[run]` | `calibrate` (log only, send no controls), `calibration_csv`, `calibration_seconds`, `print_interval_s`, `target_turn_deg_s` |
 | `[decoder]` | `trace_decay` (rate smoothing), `baseline_decay`, `warmup_steps` |
 | `[control]` | `turn_gain`, `turn_dead_zone`, `thresh_fwd`, `thresh_jump`, `thresh_back` |
 | `[stimulus]` | `max_amount`, `damage_amount`, `damage_hold_steps`, `track_amount`, `walk_amount` |
@@ -233,7 +256,7 @@ side = "L"
 ### Integration
 - [x] **F07** Sensory encoder: game events → neuron injections
 - [x] **F08** Output decoder: spikes → smoothed rate deviations
-- [ ] **F09** Calibration mode with CSV logging (watch the fly think without letting it drive)
+- [x] **F09** Calibration mode with CSV logging (watch the fly think without letting it drive)
 - [ ] **F10** Control mapper: rates → W / jump / camera turns
 - [ ] **F11** Main loop with real-time pacing
 ### Hardening

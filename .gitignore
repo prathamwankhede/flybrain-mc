@@ -13,3 +13,4 @@ calibration.csv
 # OS / editor
 .DS_Store
 .vscode/
+calibration.*.csv

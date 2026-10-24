@@ -38,6 +38,9 @@ class Config:
     refractory: float
     calibrate: bool
     calibration_csv: Path
+    calibration_seconds: float
+    print_interval_s: float
+    target_turn_deg_s: float
     trace_decay: float
     baseline_decay: float
     warmup_steps: int
@@ -96,6 +99,9 @@ def load(path: str | Path = DEFAULT_PATH) -> Config:
         refractory=float(brain["refractory"]),
         calibrate=bool(run["calibrate"]),
         calibration_csv=(base / run["calibration_csv"]).resolve(),
+        calibration_seconds=float(run["calibration_seconds"]),
+        print_interval_s=float(run["print_interval_s"]),
+        target_turn_deg_s=float(run["target_turn_deg_s"]),
         trace_decay=float(dec["trace_decay"]),
         baseline_decay=float(dec["baseline_decay"]),
         warmup_steps=int(dec["warmup_steps"]),
